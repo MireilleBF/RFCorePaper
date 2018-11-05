@@ -1,0 +1,413 @@
+\documentclass{llncs}
+
+%% Comments
+\usepackage{color}
+
+\newcommand{\comment}[4]{\par\noindent\hspace*{-0.5cm}{\parbox{\columnwidth}{\textbf{\color{#1}//#2[#3]:#4}}}\par}
+\newcommand{\mi}[1]{\comment{blue}{}{#1}{MI}}
+\newcommand{\rmk}[1]{\comment{green}{}{#1}{TH}}
+\newcommand{\todo}[1]{\todo[inline]{#1}}
+
+\usepackage[table,xcdraw]{xcolor}
+
+\pagestyle{plain}
+
+
+\newcounter{NoReq}
+\newcommand{\req}[3]{\refstepcounter{NoReq} \textit{c.\theNoReq~{#2}}\label{#1} : {#3}}
+	
+\begin{document}
+
+\title{Applying DevOps to Machine Learning}
+\subtitle{\textsc{ROCKFlows}, a Story from the Trenches}
+
+\author{
+	Mireille Blay-Fornarino\inst{1}    \and G{\"u}nther Jungbluth\inst{1}
+	\and S{\'e}bastien~Mosser\inst{1}}
+\authorrunning{Mireille Blay-Fornarino et al.}
+
+\institute{
+  Universit{\'e} C{\^o}te d'Azur, CNRS, I3S, France\\
+  \email{\{blay,jungblunth,mosser\}@i3s.unice.fr}}
+
+\maketitle              
+
+\section{Introduction}
+The \emph{Machine Learning} (ML) community is currently blooming with hundreds of new algorithms to implement tasks such as data classification for example~\cite{DBLP:journals/jmlr/DelgadoCBA14}. 
+To support data scientists and engineers who have to chose among all these algorithms, we are defining the \textsc{ROCKFlows} platform~\cite{DBLP:conf/models/CamillieriPBPRV16,rockflows} to automatically create a \emph{software product line} (SPL) of workflows integrating such algorithms (\emph{e.g.}, preprocessing, algorithm, postprocessing).
+In a nutshell, the idea of \textsc{ROCKFlows} is the following: (1) data scientist defines new algorithm and upload it to the plaform. (2) The platform composes it in valid workflows, confronts them with reference datasets used as benchmarks, and classifies the newly defined algorithm among criteria such as data type, accuracy or execution time. It eventually enriches an algorithm portfolio used by the SPL to produce suitable workflows. (3) 
+Given a problem instance, ROCKFLows platform returns a set of workflows to use to solve this problem associated with many metrics predictions extending so algorithm selection \cite{Rice1976} to workflows evaluation.
+
+Pour répondre à un tel défi, une architecture adaptée de portfolio doit être définie. Dans la section suivante, nous précisons le contexte de cette étude et les défins associés.
+
+
+%This algorithm selection process is based on a specific architecture that must meet following criteria.
+\section{Context and Motivation}
+
+Introduire Rice
+
+
+   \paragraph{Experimentation}
+Nous appellons  experimentations ....
+
+   \paragraph{Two usage cases}
+D'un côté, l'expérimentateur (l'auteur) qui déploie de nouveaux algorihmes, s'interesse à de nouveaux jeusx de données, décide de nouvelles expérimentations.
+De l'autre côté, l'utilisateur (le lecteur) celui qui utilise ces expérimentations, les consulte, les vérifie.
+
+Entre les deux, il n'y a rien. 
+
+\subsection{Criteria for a portfolio of ML WF}
+
+\subsubsection{Scalability}
+Meta learning requires comparing many experiments; architecture needs \textit{to scale}. 
+The combinations of pre-processing and algorithms and the multiplicity of datasets to identify different classes of problems involve supporting many experiments and their automatic comparison (e.g.  For 2 preprocessing and 2 composable algos it is possible to build 8 experiments, to be multiplied by the number of datasets. But for the classification there is a hundred algorithm.). 
+
+\req{combinatorial}{Taming combinatorial explosion of experiments}{Pour faire face... Il s'agit non seulement d'ens upporter plusieurs mais aussi de gerer la valeur.}
+
+\req{composing}{Dealing with non predefined composition of WF}{ Alors que dans des approches commes autosklearn les algos sont preselectionnés, cici etant donné le grand nombre on ne peut pas se limiter à des composition predefinies. }
+
+\subsubsection{Replicability of experiments}
+
+(cette partie est cérite sur la base du mooc... je ne sais pas comment les référencer).
+
+Nous visons dans le porfolio à avoir des expérimentations réplicables.
+Cela signifie que nous donnons les codes, les résultas mais également des justifications et les prpriétés qui ont pu être mises à jour.
+Cela donne confiance dans la plateforme mais vise aussi à améliorer nos processus d'expérimentation.
+
+Notre objectif est donc d'avoir un outil nous pemrettant  
+- d'inspecter la démarche suivie dans le portfolio afin, en tant que auteur, de pouvoir justifier de pourquoi ces expérimentations et que le lecteur puisse comprendre ce qui a été fait.
+-   de pouvoir refaire les expérimentaions avec plusieurs finalités : vérifier quelles sont correctes, les corriger et critère essentiel dans un portfolio pouvoir les réutiliser.
+- de fournir les résultats des expériemnations et des analyses associées, ce qui permettra de répondre à d'autres questions sans refaire les expérimentations.
+
+Dans un souci de rigueur, de transparence et de maitrise de la masse des XP, l'automatisation est essentielle. 
+
+
+The reproducibility of the experiments \cite{REF} is essential which requires controlling the execution environment. Algorithms are written in different languages and can be integrated into a single workflow. 
+
+\req{justifications}{Justifying experimentaton process}{
+Extrait de \cite{10.3389/fninf.2017.00076} 
+\begin{quote}
+    A cornerstone of science is the possibility to critically assess the correctness of scientific claims made and conclusions drawn by other scientists. This requires a systematic approach to and precise description of experimental procedure and subsequent data analysis, as well as careful attention to potential sources of error, both systematic and statistic. Ideally, an experiment or analysis should be described in sufficient detail that other scientists with sufficient skills and means can follow the steps described in published work and obtain the same results within the margins of experimental error. 
+\end{quote}
+}
+
+\req{replicability}{Mastering the experimental environment}{
+}
+
+\paragraph{Contribution : justification diagram}
+-> On visera des documents de synthèses qui ne sont pas rédigés mais générés à partir des résultats obtenus, de telle sorte qu'ils répondent à la masse des XP. Ils peuvent être regénérés si les XP sont modifiés.
+Pour l'heure nous avons uniquement une visualisation sous forme d'un graphe, qui respecte le schéma des diagrammes de justification.
+De la sorte ajouter ou modifier les stratégies de justifications aura pour conséquence de compléter automatiquement le document.
+
+\paragraph{Contribution : Docker files predefinis}
+Complexité de la pile logicielle dont on ne maitrise pas le contenu. 
+
+
+On se posera la question de la confiance dans chacune des briques.
+
+\paragraph{Contribution : sauvegarde des données}
+C'est pas réaliste ce truc!! des résultats peut etre...
+
+
+
+
+\subsubsection{Validity of analysis}
+The experiments carried out to classify the workflows must be \textit{valid}.
+Cette propriété dépend des expérimentations réalisées. Elle vise à améliorer la confiance et les processus suivi, de même qu'à nous rassurer sur la validité des processus suivis.
+
+L'objectif est alors pour faire face à la masse des experiementations de s'assurer automatiquement de la validité des processus suivi, ceci en fonction des connaissances à un moment donné. 
+
+On peut construire des schéams globaux, les expremiation doivent être répétable pour que l'on puisse construire de la connaissance dessus. Pour les comparer on s'attend à ce que les même methodes d'avaluatoins aient été suivies. 
+
+This property includes that the experiments must be repeatable and reproducible. The evaluation methods must be the same, this includes strategies (e.g. Ten folds), metrics records (e.g. time including or not writing data). The algorithms can be integrated in workflows with the same preprocessors, written in different languages. \textit{The architecture must ensure that the experiments used to learn are comparable.}
+
+\req{control}{
+Controling the analysis}{
+
+}
+
+%\todo[definir le terme de comparable]{}
+
+
+%The reproducibility of the experiments \cite{REF} is essential which requires controlling the execution environment. 
+
+\subsubsection{Supporting Evolutions}
+
+The ML community is very active; Such a platform must be able\textit{ to evolve }by integrating new algorithms, datasets, metrics, evaluation techniques and meta-learning. 
+This evolution impacts the processes of execution, experimentation, memorization, interoperability with other systems as well as the choice of meta-learning approaches.
+
+\paragraph{User-Centric Action }
+Il est impératif d'avoir de courtes boucles de rétroaction avec les parties prenantes du Système : Data Scientits (DS) et End-User(EU). Dans le cas des DS il s'agit de les aider à utiliser les connaissances propres à la PF et ce faisant à l'enrichir. Dans le cas des EU, de leur proposer les enrichissmenets apporteés par les DS sans exiger d'eux des connaissances propres au domaine du DS. 
+Pour être en mesure de répondre aux exigences de ces différents utilisateurs, l'équipe de développement (DEV), qui est réduite, doit s'appuyer sur des outils "adaptables" permettant une intégration en continue contrôlée (e.g. les résultats d'expérience ajoutés doivent être comparable et reproductible?? mettre le bon mot), scalable (e.g. la PF ne peut pas réapprendre à chaque ajout d'algorithmes au risque de ne jamais être disponible) et idoine (e.g. préserver une présentation de haut niveau).
+
+=> Sur chacun de ces points nous expliciterons les approches que nous avons suivi pour y répondre.
+
+En particulier on ne peut pas fournir des API mais un langage pour identifier ce qyu est fait, pour faciliter ...
+
+\req{EndUser}{Supporting End User}{ differnt languages and usages; mettre le focus sur ce qui a de la valeur; 
+}
+
+\paragraph{End-To-End Responsibility}
+Alors que dans les approches "bibliothèques" chacun ne travaille que pour améliorer son "algorithme", l'approche ROCKFlows exige de superviser l'ensemble des contributions pour constuire une connaissance à destination de l'humain et avec l'humain dans la boucle.
+Ainsi tout DS est "responsable" non seulement de ses développements mais également des workflows qui en résultent qui seront proposés aux EU. Chacun, DS ou DEV, est ainsi directement impliqué dans la maitrise des performances et la qualité de sa production. 
+Cependant une des difficultés est ici que les DEV n'ont pas toutes les compétences des DS et que les interactions sont alors essentielles entre les stakeholders pour administrer la PF elle-même.
+
+=> Pour supporter cette gestion en continue de la qualité de la PF qui évolue, il est nécessaire de mettre en place différents outils pour à la fois se donner le droit d'apprendre et donc de se tromper sans perdre en qualité ...
+
+
+\paragraph{Continuous Improvement and automation}
+Le problème de l'évolution en continue de la PF par enrichissement doit être accompagné d'une amélioration de la PF en terme de fonctionnalités, d'optimisation des apprentissages en terme de temps, d'efficiatité , ..., d'adaptation de la PF aux utilsiateurs.
+Cela inclut non seukement d'adapter mais également d'intégrer... 
+de controler les XP pour tendre à controler les espaces d'XP
+
+=> nous montrerons les techno utilisées poru automatiser non seulement les processus d'intégration mais également d'Xp en simpifiant la tache et en assurant la qualité des info sauvegardées.
+Nous montrerons l'importance des outils de surveillance adaptés pour garder l'humain dans la boucle.
+
+\req{Continuous}{Continuous Improvement}{ differnt languages and usages; mettre le focus sur ce qui a de la valeur; 
+}
+
+Dicuster continuous
+
+
+% Please add the following required packages to your document preamble:
+% \usepackage[table,xcdraw]{xcolor}
+% If you use beamer only pass "xcolor=table" option, i.e. \documentclass[xcolor=table]{beamer}
+\begin{table}[]
+\begin{tabular}{|
+>{\columncolor[HTML]{EFEFEF}}c |c|c|c|c|c|c|c|c|}
+\hline
+                               & \cellcolor[HTML]{EFEFEF}\textbf{\ref{Combinatory}} & \cellcolor[HTML]{EFEFEF}\textbf{Composition} & \cellcolor[HTML]{EFEFEF}\textbf{Replicability} & \cellcolor[HTML]{EFEFEF}\textbf{Justifying} & \cellcolor[HTML]{EFEFEF}\textbf{\ref{control}} & \cellcolor[HTML]{EFEFEF}\textbf{Learning} & \cellcolor[HTML]{EFEFEF}\textbf{Supporting End User} & \cellcolor[HTML]{EFEFEF}\textbf{Continuous Improvement} \\ \hline
+\textbf{WF Composer}           &                                              &                                              &                                                &                                             &                                             &                                           & X                                                    & X                                                       \\ \hline
+\textbf{Job Scheduler}         & X                                            &                                              &                                                &                                             &                                             &                                           &                                                      &                                                         \\ \hline
+\textbf{Container}             &                                              & X                                            & X                                              &                                             &                                             &                                           &                                                      &                                                         \\ \hline
+\textbf{DSL}                   &                                              & X                                            & X                                              &                                             & X                                           &                                           & X                                                    &                                                         \\ \hline
+\textbf{Justification Diagram} &                                              &                                              & X                                              & X                                           & X                                           &                                           & X                                                    &                                                         \\ \hline
+\textbf{Metric Registry}       & X                                            &                                              &                                                &                                             &                                             &                                           &                                                      &                                                         \\ \hline
+\textbf{Data Registry}         &                                              &                                              &                                                &                                             &                                             &                                           &                                                      &                                                         \\ \hline
+\textbf{Algorithm Registry}    & X                                            & X                                            &                                                &                                             &                                             &                                           &                                                      &                                                         \\ \hline
+\textbf{Meta-learning Layer}   & X                                            & X                                            &                                                &                                             & X                                           & X                                         &                                                      & X                                                       \\ \hline
+\end{tabular}
+\end{table}
+
+\section{A dedicated portfolio Architecture : Overview}
+To meet these different requirements we have developed a dedicated architecture. We give a global vision in the next section and then detail criteria by criteria the elements set up to support these different requirements.
+
+\section{A RECUPERER}
+
+
+
+
+
+
+
+
+
+
+%used by  data scientists to configure an ML workflow that fit their needs \emph{w.r.t} their business objective. 
+% Given a problem instance, ROCKFLows platform returns a set of workflows to use to solve this problem associated with many metrics predictions extending so algorithm selection \cite{Rice1976} to workflows evaluation .
+
+
+
+
+
+%% Problem
+\section{DevOps}
+\mi{une autre manière de poser le probkeme... c'est peut etre encore bien mieux... quitte a le remonter dans le contexte.... et a }
+\paragraph{The ML community: Who are the Devs? Who are the Ops?} In this context, one might wonder how \textsc{ROCKFlows} fits the DevOps paradigm. According to Wikipedia, DevOps \emph{``strongly advocate automation and monitoring at all steps of software construction, from integration, testing, releasing to deployment and infrastructure management. DevOps aims at shorter development cycles, increased deployment frequency, more dependable releases, in close alignment with business objectives"}~\cite{wikipedia}. On the one hand, we call a \emph{developer} the %software 
+engineer who is in charge of implementing a learning algorithm. It is her responsibility to properly implement and test such an algorithm, at the unit and integration levels (\emph{e.g.}, integration with standard preprocessors to prepare the dataset to classify). The deployment can be done through the integration of a standard library such as Weka~\cite{Hall:2009:WDM:1656274.1656278}, or providing a container hosting the algorithm and its dependencies as a self-contained tool. On the other hand, we call an \emph{operational} the engineer who reuses an existing algorithm to solve a particular problem that requires learning capabilities. It is her responsibility to deploy the algorithm in her very context and maintain it \emph{w.r.t} the operational infrastructure she uses.  
+
+%% Solution
+\paragraph{Bridging the gap between Dev and Ops in the ML community.} Based on these definitions, we defend \textsc{ROCKFlows} as a DevOps platform for ML algorithms. It provides an experimentation pipeline to support the addition of a new algorithm into a portfolio. From the \emph{dev} point of view, \textsc{ROCKFlows} aims to reduce development time and support frequent release of ML algorithms. Using the platform, each new algorithm is verified and automatically estimated \emph{w.r.t} reference benchmarks without any intervention from the developers. The platform also automatically conducts reproducible experiments to gather metrics associated to the benchmarks, which is essential for workflow comparisons. From the \emph{ops} point of view, \textsc{ROCKFlows} supports the definition of dependable releases by helping data scientists to select the right workflow based on the previously described metrics expressed according to business objectives,\emph{e.g.}, ``a fast classifier with medium accuracy compatible with CSV data''. It also accelerates the deployment time by automatically generating a turn-key workflow ready to analyze datasets.
+
+%\paragraph{Technical implementation.}
+%In order to compare different workflows we need to execute these workflows in the same execution context and gather metrics that can be compared.
+%The platform uses \textit{Docker} to create and manage automated, controlled, execution contexts. Every job description inherits from a kernel image that includes tools to gather metrics. By automating metric surveys, equivalence, independence and completeness of the evaluation, processes are ensured. The platform contains an idempotent job scheduler that orchestrates the execution of the jobs of workflows comparison. This property reduces the overall complexity. When a new data set, transformation, algorithm is added to the experiment platform we automatically compute the jobs to be executed and add them to the job scheduler. It accelerates reliable cross-testing of workflows and data-sets. For portfolio construction, we rely on standard feature model merging.
+
+%Each job is executed in the same execution environment. This is required to make all our runs reproducible and to make sure that the gathered metrics can be compared. For instance, we dedicate a dedicated maximum computation speed (in hertz) for each execution. 
+%The job scheduler is idempotent; It only executes a job once for a given data set. 
+%The platform records all the metrics of all the runs in a metric registry using a dedicated metric aggregation service. %is present in the platform to aggregate all the metrics of a given job/workflow (e.g. average accuracy, standard deviation of the accuracy, maximum total time).
+%The platform contains 
+%that need 
+----------------------
+-----------------------
+
+ 
+% Given a problem instance, ROCKFLows platform returns a set of workflows to use to solve this problem associated with many metrics predictions extending so algorithm selection \cite{Rice1976} to workflows evaluation .
+
+
+
+%\paragraph{Perspectives.}
+%%% Try
+\rmk{Peut servir d'ouverture à la suite}
+A portfolio of ML Workflows relies not only on automated experiments and deployments but also on evolving processes to compare, evaluate and address problems. So \emph{ops} and \emph{dev} need to constantly communicate to improve the quality of the release process and support changes and enrichments. We foresee the possibility of using specific languages to capture the relations among algorithms, preconditions, experimental reports, visualize the results of experiments.
+%% Results
+
+%---- pour commencer à travailler
+
+
+\section{State of the ART}
+
+comment je definis dans l'interface OPEN-ML....
+
+multi language?
+
+
+
+\section{An environment Devops for ML}
+\subsection{User-centric pipelines definition and running}
+- High level definition of pipelines
+- reuse of existing algo
+- hiding multi-language paradigmes
+- generating pipelines fo instance parsing open-ML
+- many ways to compose pipelines but not all are consistent nor efficient
+- some e-u will not be able to even write a pipeline; RF as a service
+
+\subsubsection{A language to define Pipelines}
+Workflows (nb: je sais pas si je parle tjs de wf ou je mets pipelines)
+Workflow model: (un peu de ce qu’on a dit dans le papier pour MASES, sans le parcour de graph)
+Workflow composer: (ici on parcourt le graph et pour un DS on renvoie les wfs) 
+accessing parameters
+reuse of docker images
+hiding complexity
+
+Workflow /pipeline DSL
+A DSL to easily declare pieplines that need to be executed (je peux envoyer des exemples si besoin). 
+
+evaluation et de runs
+
+\subsubsection{Environnement controllé}
+DOCKER...
+
+
+\subsubsection{Pipeline composer}
+pre et post conditions
+
+
+\subsection{Job scheduler to manage scalability seamlessly}
+
+Here are a set of properties the job -cheduler must meet.
+
+\paragraph{Idempotency : don't run twice the same process} Defining an experiment in a declarative way can be seen as : on data set D run p1;p2;a and later p1;p2;b
+We look for idempotent property.
+
+c'est géré par des ressources dans les approches plus claissues?
+
+\paragraph{Resilience : don't ask twice the same process}
+When launching experiments cela peut prendre du temps, c'est une accumulation de micro process. Même si l'idemnpotence permet de relancer l'ensemble des processes, l'idée ici est de ne pas avoir à relancer les XP
+\paragraph{Distribution  : Adaptation à l'environnement d'exacution (elasticuty?)}
+\paragraph{Traceability  : tell user what is happening }
+\paragraph{Incrementality  : don't wait to ask for running a new pipeline }
+\paragraph{Prioritization  : don't wait to run a pipeline }
+Can fetch the next workflow to execute through the operator next. As of right now all workflows that need to be executed are added on a queue and the next operator retrieves the next element of the queue
+
+\subsubsection{A data base to manage the set of jobs}
+\subsubsection{Log registry to trace in long term}
+We save each execution log with stdout, stderr, exitCode, timestamp
+WHY ???? c'est perenne?
+\subsubsection{a value driven architecture}
+next principles
+
+
+
+
+
+
+
+\subsection{Component oriented Approach to bridge the gap between dev and ops}
+\paragraph{Separation of concerns to tackle entropy}
+The job scheduler and its linked components (metrics, job executor and logs) can be run independently and can be adapted to different domains :
+The dsl can be easily extended to execute non-ML pipelines (i.e. Claude)\rmk{je le dirai pas}
+
+\subsubsection{Automatic weka extractor}
+Extract weka algorithms automatically: We have a generic weka algorithm docker image that we can parameter at run time with execution arguments/env variables
+
+\subsubsection{Extending the language to compare}
+
+
+
+\subsection{User Interfaces dedicated to specific tasks}
+\rmk{j'aime pas du tout ce titre ci dessus et dessous}
+\subsubsection{non expert UI}
+A feature model driven GUI enrichie avec des meta data pour etre plus proche de l'utilisetur néophyte.
+
+\subsubsection{Experiment UI}
+UI to display the status of the experiment system
+Includes grafana
+Includes view to display/compare the different datasets
+Can register processes and upload datasets
+
+
+
+\subsubsection{CLI to easily manipulate the system in a non graphical environment }
+Launch experiments through a pipeline script (DSL)
+Show running experiments
+Show results of given pipelines
+...
+\subsubsection{Advanced monitoring}
+Prometheus on all our different services
+Grafana to visualize the different system metrics
+
+\subsection{Automating Variability management and improvement}
+On retrouve els mêmes objectifs que dans OpenML
+- Ne pas refaire 2 fois la même chose
+- Simplifier la tache
+- avoir une base d'apprentissage
+- Apprendre de l'existant
+- managing versions to tackle changes
+
+
+- Une evolution contsante du systeme
+- une gestion dififcile du changement parce que les pistes sont nombreuses : apprendre, justifier, controler.
+- beaucoup de composants différents avec des responsabilités différentes et liées.
+- minimiser el couplage
+
+
+\subsubsection{Dataset \& Process registry}
+dataset upload => meta-feature analysis and upload as a docker volume* (We built a driver to have a centralised FS using gitlab as storage)
+Process => docker image (with parameters, volumes; with corresponding driver,, …) + constraints
+\subsubsection{Docker volume driver}
+Save volumes as git repository using gitlab
+\rmk{Mouais faut voir si on la garde séparée de la précédente}
+
+
+%\subsection{Event based Continuous Improvement and automation}
+\subsubsection{Events to log changes}
+Each registry throws a new event (pub/sub with rabbitmq)
+
+\subsubsection{Experiments launcher}
+Listens on additions events
+Ask the workflow composer for workflows to execute
+Adds them to the pool of workflows to execute (job-scheduler)
+
+\subsubsection{Feature Model Enrichment}
+Listens on process additions events	: edit the feature model corresponding to our elements by adding the added feature
+
+\subsection{virtuous circle of learning}
+De la même maniere que les developpeurs definissent et tests des algos, l'approche RF utilsie ces propres outils pour apprendre des experimentations nous montrons ici comment nous les utilisons
+
+Model learning job
+Job to train the rockflows models
+\subsubsection{Running experiments and saving metrics in registry}
+Same as all the other jobs: save metrics, etc….
+\subsubsection{Learning from experiments and testing our own model of experiments}
+Automatic comparaisons
+
+Perspectives : ensuring that we improve learning... defining metrics..
+
+Can run tests on the model afterwards to ensure non-regression?
+Its launch can be automated (e.g.after n workflows, after these workflows, etc)
+
+
+\subsection{RF as a service}
+
+
+"All architecture is design but not all design is architecture. Architecture represents the significant design decisions that shape a system, where significant is measured by cost of change."
+— Grady Booch, blog post, March 2, 2006
+
+
+\section{Conclusion and Perspectives}
+\bibliographystyle{splncs}
+\bibliography{devops}
+
+
+\end{document}
